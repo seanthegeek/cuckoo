@@ -32,6 +32,9 @@ local/
 # Cuckoo package stuff
 cuckoo/private/.cwd
 
+# Monitor downloads
+cuckoo/data/monitor/*/*
+
 # Frontend compilation services
 node_modules/
 bower_components/

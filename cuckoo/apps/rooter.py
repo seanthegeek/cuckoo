@@ -148,13 +148,16 @@ def dns_forward(action, vm_ip, dns_ip, dns_port="53"):
 def forward_enable(src, dst, ipaddr):
     """Enable forwarding a specific IP address from one interface into
     another."""
+    # Insert (-I) instead of appending (-A) forwarding rules to supersede libvirt's default REJECT rules. e.g.:
+    # -A FORWARD -o virbr0 -j REJECT --reject-with icmp-port-unreachable
+    # -A FORWARD -i virbr0 -j REJECT --reject-with icmp-port-unreachable
     run(
-        s.iptables, "-A", "FORWARD", "-i", src, "-o", dst,
+        s.iptables, "-I", "FORWARD", "-i", src, "-o", dst,
         "--source", ipaddr, "-j", "ACCEPT"
     )
 
     run(
-        s.iptables, "-A", "FORWARD", "-i", dst, "-o", src,
+        s.iptables, "-I", "FORWARD", "-i", dst, "-o", src,
         "--destination", ipaddr, "-j", "ACCEPT"
     )
 
@@ -199,6 +202,11 @@ def inetsim_redirect_port(action, srcip, dstip, ports):
         run(
             s.iptables, "-t", "nat", action, "PREROUTING", "--source", srcip,
             "-p", "tcp", "--syn", "--dport", srcport,
+            "-j", "DNAT", "--to-destination", "%s:%s" % (dstip, dstport)
+        )
+        run(
+            s.iptables, "-t", "nat", action, "PREROUTING", "--source", srcip,
+            "-p", "udp", "--dport", srcport,
             "-j", "DNAT", "--to-destination", "%s:%s" % (dstip, dstport)
         )
 
