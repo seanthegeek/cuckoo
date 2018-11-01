@@ -19,6 +19,7 @@ import sys
 import threading
 import warnings
 import xmlrpclib
+import pkg_resources
 
 from distutils.version import StrictVersion
 
@@ -255,16 +256,12 @@ def exception_message():
     msg += "Python implementation: %s\n" % platform.python_implementation()
     msg += "Machine arch: %s\n" % platform.machine()
 
-    try:
-        import pip._internal as pip
-    except ImportError:
-        import pip
-
     msg += "Modules: %s\n\n" % " ".join(sorted(
-        "%s:%s" % (package.key, package.version)
-        for package in pip.get_installed_distributions()
+        "%s:%s" % (package.project_name, package.version)
+        for package in pkg_resources.working_set
     ))
     return msg
+
 
 _jsbeautify_blacklist = [
     "",
