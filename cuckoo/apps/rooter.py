@@ -148,16 +148,18 @@ def dns_forward(action, vm_ip, dns_ip, dns_port="53"):
 def forward_enable(src, dst, ipaddr):
     """Enable forwarding a specific IP address from one interface into
     another."""
-    # Insert (-I) instead of appending (-A) forwarding rules to supersede libvirt's default REJECT rules. e.g.:
+    # DELETE libvirt's default REJECT rules. e.g.:
     # -A FORWARD -o virbr0 -j REJECT --reject-with icmp-port-unreachable
     # -A FORWARD -i virbr0 -j REJECT --reject-with icmp-port-unreachable
+    run(settings.iptables, "-D", "FORWARD", "-i", dest"-j", "REJECT")
+    run(settings.iptables, "-D", "FORWARD", "-o", dest"-j", "REJECT")
     run(
-        s.iptables, "-I", "FORWARD", "-i", src, "-o", dst,
+        s.iptables, "-A", "FORWARD", "-i", src, "-o", dst,
         "--source", ipaddr, "-j", "ACCEPT"
     )
 
     run(
-        s.iptables, "-I", "FORWARD", "-i", dst, "-o", src,
+        s.iptables, "-A", "FORWARD", "-i", dst, "-o", src,
         "--destination", ipaddr, "-j", "ACCEPT"
     )
 
