@@ -151,8 +151,8 @@ def forward_enable(src, dst, ipaddr):
     # DELETE libvirt's default REJECT rules. e.g.:
     # -A FORWARD -o virbr0 -j REJECT --reject-with icmp-port-unreachable
     # -A FORWARD -i virbr0 -j REJECT --reject-with icmp-port-unreachable
-    run(settings.iptables, "-D", "FORWARD", "-i", dst"-j", "REJECT")
-    run(settings.iptables, "-D", "FORWARD", "-o", dst"-j", "REJECT")
+    run(settings.iptables, "-D", "FORWARD", "-i", src"-j", "REJECT")
+    run(settings.iptables, "-D", "FORWARD", "-o", src"-j", "REJECT")
     run(
         s.iptables, "-A", "FORWARD", "-i", src, "-o", dst,
         "--source", ipaddr, "-j", "ACCEPT"
